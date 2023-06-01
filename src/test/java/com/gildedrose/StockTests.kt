@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-
 class StockTests {
 
     @Test
@@ -19,7 +18,7 @@ class StockTests {
 
 }
 
-val oct29 = LocalDate.parse("2021-10-29")
+val oct29: LocalDate = LocalDate.parse("2021-10-29")
 
 
 
