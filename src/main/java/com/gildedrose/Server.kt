@@ -40,7 +40,7 @@ class Server(stock: List<Item>,
     }
 }
 
-data class StockListViewModel(
+private data class StockListViewModel(
     val now: String,
     val items: List<Map<String, String>>
 ): ViewModel
