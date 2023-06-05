@@ -21,42 +21,36 @@ class PersistenceTests {
         val file = File(dir, "stock.tsv")
         val stockList = StockList(now, items)
         stockList.saveTo(file)
-        assertEquals(stockList, file.loadItems(defaultLastModified = now.plusSeconds(3600)))
+        assertEquals(stockList, file.loadItems())
     }
     @Test
-    fun `save and load empty`() {
+    fun `save and load empty stockList`() {
         val stockList = StockList(now, emptyList())
-        assertEquals(stockList, stockList.toLines().toStockList(defaultLastModified = now.plusSeconds(3600)))
+        assertEquals(stockList, stockList.toLines().toStockList())
+    }
+
+    @Test
+    fun `load from empty file `() {
+        assertEquals(StockList(Instant.EPOCH, emptyList()),
+            emptySequence<String>().toStockList())
     }
 
     @Test
     fun `load with no LastModified header`() {
         val lines = sequenceOf("# Banana")
-        val stockList = StockList(now, emptyList())
-        assertEquals(stockList, lines.toStockList(defaultLastModified = now))
+        val stockList = StockList(Instant.EPOCH, emptyList())
+        assertEquals(stockList, lines.toStockList())
     }
 
     @Test
     fun `load with blank LastModified header`() {
         val lines = sequenceOf("# LastModified:")
         try {
-            lines.toStockList(defaultLastModified = now)
+            lines.toStockList()
             fail("didn't throw")
         } catch (x: IOException) {
             assertEquals("Could not parse LastModified header: Text '' could not be parsed at index 0", x.message)
         }
     }
 
-    @Test
-    fun `load legacy file`(@TempDir dir: File) {
-        val file = File(dir, "stock.tsv")
-        items.legacySaveTo(file)
-        assertEquals(StockList(now, items), file.loadItems(defaultLastModified = now))
-    }
-}
-fun List<Item>.legacySaveTo(file: File) {
-    fun Item.toLine() = "$name\t$sellByDate\t$quality"
-    file.writer().buffered().use { writer ->
-        forEach { item -> writer.appendLine(item.toLine()) }
-    }
 }

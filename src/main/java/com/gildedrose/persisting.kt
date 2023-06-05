@@ -16,17 +16,15 @@ fun StockList.toLines(): Sequence<String> =
         items.map { it.toLine() }
 
 
-fun File.loadItems(defaultLastModified: Instant = Instant.now()): StockList = useLines { lines ->
-    lines.toStockList(defaultLastModified)
+fun File.loadItems(): StockList = useLines { lines ->
+    lines.toStockList()
 }
 private fun Item.toLine() = "$name\t$sellByDate\t$quality"
 
-fun Sequence<String>.toStockList(
-    defaultLastModified: Instant
-): StockList {
+fun Sequence<String>.toStockList(): StockList {
     val (header, body) = partition { it.startsWith("#") }
     return StockList(
-        lastModified = lastModifiedFrom(header) ?: defaultLastModified,
+        lastModified = lastModifiedFrom(header) ?: Instant.EPOCH,
         items = body.map { line -> line.toItem() }.toList()
     )
 }
