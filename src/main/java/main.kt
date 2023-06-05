@@ -11,7 +11,5 @@ fun main() {
     server.start()
 }
 
-fun routesFor(stockFile: File, calendar: () -> LocalDate = LocalDate::now): RoutingHttpHandler {
-    val stock = stockFile.loadItems()
-    return routes(stock, calendar)
-}
+fun routesFor(stockFile: File, calendar: () -> LocalDate = LocalDate::now): RoutingHttpHandler =
+    routes(stock = { stockFile.loadItems() }, calendar = calendar)

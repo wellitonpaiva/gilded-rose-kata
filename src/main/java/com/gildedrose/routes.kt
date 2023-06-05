@@ -4,6 +4,7 @@ import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.routing.bind
+import org.http4k.routing.routes
 import org.http4k.template.HandlebarsTemplates
 import org.http4k.template.ViewModel
 import java.time.LocalDate
@@ -14,14 +15,15 @@ import java.time.temporal.ChronoUnit
 private val dateFormat: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
 
 private val handlebars = HandlebarsTemplates().HotReload("src/main/java")
-fun routes(stock: List<Item>, calendar: () -> LocalDate = LocalDate::now) =
-    org.http4k.routing.routes(
+fun routes(stock: () -> StockList, calendar: () -> LocalDate = LocalDate::now) =
+    routes(
         "/" bind Method.GET to { _ ->
             val now = calendar()
+            val stockList = stock()
             Response(Status.OK).body(handlebars(
                 StockListViewModel(
                     now = dateFormat.format(now),
-                    items = stock.map { it.toMap(now) }
+                    items = stockList.map { it.toMap(now) }
                 )
 
             ))
